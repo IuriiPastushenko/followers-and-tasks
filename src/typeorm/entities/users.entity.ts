@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+/* eslint-disable indent */
+import {
+	Entity,
+	Column,
+	PrimaryGeneratedColumn,
+	OneToMany,
+	JoinColumn,
+} from 'typeorm';
+import { Relationships } from './relationships.enity';
 
 @Entity()
 export class Users {
@@ -10,4 +18,18 @@ export class Users {
 
 	@Column({ type: 'varchar', length: 20, nullable: false })
 	gender: string;
+
+	@OneToMany(() => Relationships, (relationship) => relationship.lider)
+	// @JoinColumn({
+	// 	name: 'lider',
+	// 	referencedColumnName: 'lider',
+	// })
+	relationshipLider: Relationships[];
+
+	@OneToMany(() => Relationships, (relationship) => relationship.follower)
+	// @JoinColumn({
+	// 	name: 'follower',
+	// 	referencedColumnName: 'follower',
+	// })
+	relationshipFollower: Relationships[];
 }

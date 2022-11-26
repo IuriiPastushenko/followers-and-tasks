@@ -1,7 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { HttpException } from '../errors/httpexception';
 import { typeOrmConnects } from '../../index';
-import { IUser } from './users.interfaces';
+import { GetFriendsDto, nameSort } from './dto/getFriends.dto';
+import { validationMiddleware } from '../midlleware/validate.middleware';
 
 export class UsersRouter {
 	public router = Router();
@@ -11,23 +12,38 @@ export class UsersRouter {
 	}
 
 	usersrouts(): void {
-		// 	// List of users
-		// 	this.router.get(
-		// 		'/list',
-		// 		validationMiddleware(UsersListDto),
-		// 		async (req: Request, res: Response, next: NextFunction) => {
-		// 			try {
-		// 				const dataForDB = req.query;
-		// 				const resultUsersList = await typeOrmConnects.sendUsersList(
-		// 					dataForDB,
-		// 				);
-		// 				res.status(201).json(resultUsersList);
-		// 			} catch (err) {
-		// 				next(
-		// 					new HttpException(406, 'Users list not available', err as string),
-		// 				);
-		// 			}
-		// 		},
-		// 	);
+		// List of users
+		this.router.get(
+			'/users',
+			async (req: Request, res: Response, next: NextFunction) => {
+				try {
+					const resultUsersList = await typeOrmConnects.usersList();
+					res.status(201).json(resultUsersList);
+				} catch (err) {
+					next(
+						new HttpException(424, 'Users list not available', err as string),
+					);
+				}
+			},
+		);
+
+		// List of users
+		this.router.get(
+			'/users/123/friends',
+			validationMiddleware(GetFriendsDto),
+			async (req: Request, res: Response, next: NextFunction) => {
+				try {
+					const resultFromQuery = req.query;
+					const idUser = +(resultFromQuery.order_by as string);
+					const sortBy = resultFromQuery.order_type as string;
+					const friends = await typeOrmConnects.getFriends(idUser, sortBy);
+					res.status(201).json(friends);
+				} catch (err) {
+					next(
+						new HttpException(424, 'Friends list not available', err as string),
+					);
+				}
+			},
+		);
 	}
 }

@@ -16,7 +16,7 @@ export class ServerOrganization {
 
 	// routerUsers
 	private routingUser(usersrouter: UsersRouter): void {
-		this.app.use('/users', usersrouter.router);
+		this.app.use('/', usersrouter.router);
 	}
 
 	// Error exeption

@@ -1,4 +1,5 @@
 import { DataSourceOptions } from 'typeorm';
+import { Relationships } from './entities/relationships.enity';
 import { Users } from './entities/users.entity';
 
 export const typeOrmConfig: DataSourceOptions = {
@@ -10,7 +11,7 @@ export const typeOrmConfig: DataSourceOptions = {
 	database: 'followers',
 	synchronize: false,
 	logging: true,
-	entities: [Users],
+	entities: [Users, Relationships],
 	subscribers: [],
-	migrations: ['src/migrations/*.js'],
+	migrations: [],
 };
