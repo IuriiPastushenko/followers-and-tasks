@@ -1,4 +1,5 @@
 export interface ISubscription {
-	rtl_follower: number;
-	count: number;
+	follower?: number;
+	count?: number;
+	id_user?: number;
 }

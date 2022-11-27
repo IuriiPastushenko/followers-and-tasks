@@ -21,9 +21,9 @@ export class Users {
 
 	@OneToMany(
 		() => Relationships,
-		(relationshipLider) => relationshipLider.lider,
+		(relationshipLider) => relationshipLider.author,
 	)
-	liders: Relationships[];
+	authors: Relationships[];
 
 	@OneToMany(
 		() => Relationships,

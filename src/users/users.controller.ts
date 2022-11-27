@@ -21,7 +21,7 @@ export class UsersRouter {
 					res.status(201).json(resultUsersList);
 				} catch (err) {
 					next(
-						new HttpException(424, 'Users list not available', err as string),
+						new HttpException(422, 'Users list not available', err as string),
 					);
 				}
 			},
@@ -40,11 +40,12 @@ export class UsersRouter {
 					res.status(201).json(friends);
 				} catch (err) {
 					next(
-						new HttpException(424, 'Friends list not available', err as string),
+						new HttpException(422, 'Friends list not available', err as string),
 					);
 				}
 			},
 		);
+
 		// Top 5 by subscriptions
 		this.router.get(
 			'/max-following',
@@ -55,8 +56,27 @@ export class UsersRouter {
 				} catch (err) {
 					next(
 						new HttpException(
-							424,
+							422,
 							'List of subscriptions not available',
+							err as string,
+						),
+					);
+				}
+			},
+		);
+
+		// Users with subscriptions = 0
+		this.router.get(
+			'/not-following',
+			async (req: Request, res: Response, next: NextFunction) => {
+				try {
+					const zeroSubscriptions = await typeOrmConnects.getZero();
+					res.status(201).json(zeroSubscriptions);
+				} catch (err) {
+					next(
+						new HttpException(
+							422,
+							'List of users with subscriptions = 0 not available',
 							err as string,
 						),
 					);

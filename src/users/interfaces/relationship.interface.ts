@@ -1,5 +1,5 @@
 export interface IRelationship {
 	id_relationship: number;
-	lider: number;
+	author: number;
 	follower: number;
 }

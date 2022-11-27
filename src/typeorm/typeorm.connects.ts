@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import { nameSort } from '../users/dto/getFriends.dto';
 import { IRelationship } from '../users/interfaces/relationship.interface';
 import { IUser } from '../users/interfaces/user.interface';
 import { ISubscription } from '../users/interfaces/user.subscription';
@@ -30,7 +29,7 @@ export class TypeOrmConnects {
 			.getRepository(Users)
 			.createQueryBuilder('users')
 			.distinctOn(['users.id_user'])
-			.innerJoin(Relationships, 'r', 'users.id_user = r.lider')
+			.innerJoin(Relationships, 'rlt', 'users.id_user = rlt.author')
 			.orderBy('id_user')
 			.getMany();
 		return resultFromDB;
@@ -55,9 +54,9 @@ export class TypeOrmConnects {
 					.subQuery()
 					.select('rltn.follower')
 					.from(Relationships, 'rltn')
-					.where('rltn.lider = :lider', { lider: `${idUser}` })
+					.where('rltn.author = :author', { author: `${idUser}` })
 					.getQuery();
-				return 'rlt.lider IN ' + subQuery;
+				return 'rlt.author IN ' + subQuery;
 			})
 			.andWhere('rlt.follower = :follower', { follower: `${idUser}` })
 			.orderBy('rlt.follower', sortBy)
@@ -70,12 +69,30 @@ export class TypeOrmConnects {
 		const resultFromDB = await this.dataSource
 			.getRepository(Relationships)
 			.createQueryBuilder('rtl')
-			.select('rtl.follower')
+			.select('rtl.follower', 'follower')
 			.addSelect('Count(rtl.follower) as count')
 			.groupBy('rtl.follower')
 			.orderBy('count', 'DESC')
 			.limit(5)
 			.getRawMany();
+		return resultFromDB;
+	}
+
+	// Getting users with subscriptions = 0
+	async getZero(): Promise<ISubscription[]> {
+		const resultFromDB = await this.dataSource
+			.getRepository(Users)
+			.createQueryBuilder('us')
+			.select('us.id_user')
+			.where((qb) => {
+				const subQuery = qb
+					.subQuery()
+					.select('rlt.follower')
+					.from(Relationships, 'rlt')
+					.getQuery();
+				return 'NOT us.id_user IN ' + subQuery;
+			})
+			.getMany();
 		return resultFromDB;
 	}
 }

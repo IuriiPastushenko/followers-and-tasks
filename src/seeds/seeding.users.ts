@@ -52,37 +52,37 @@ import { Client } from 'pg';
 	  (id_relationship SERIAL, \
 		lider INTEGER NOT NULL, \
 		follower INTEGER NOT NULL, \
-		FOREIGN KEY(lider) REFERENCES users (id_user), \
+		FOREIGN KEY(author) REFERENCES users (id_user), \
 		FOREIGN KEY(follower) REFERENCES users (id_user));';
 	await client.query(queryToDB);
 
 	for (let i = 1; i <= maxRelationship; i++) {
-		const randomLider = chance.natural({
+		const randomAuthor = chance.natural({
 			min: 1,
 			max: maxUsers,
 		});
-		const checkRandomLider = randomLider.toString();
-		if (checkRandomLider in countRelationshipPerOneUse) {
+		const checkRandomAuthor = randomAuthor.toString();
+		if (checkRandomAuthor in countRelationshipPerOneUse) {
 			if (
-				countRelationshipPerOneUse[checkRandomLider] < maxRelationshipPerOneUse
+				countRelationshipPerOneUse[checkRandomAuthor] < maxRelationshipPerOneUse
 			) {
-				countRelationshipPerOneUse[checkRandomLider] =
-					countRelationshipPerOneUse[checkRandomLider] + 1;
+				countRelationshipPerOneUse[checkRandomAuthor] =
+					countRelationshipPerOneUse[checkRandomAuthor] + 1;
 			} else {
 				continue;
 			}
 		} else {
-			countRelationshipPerOneUse[checkRandomLider] = 0;
+			countRelationshipPerOneUse[checkRandomAuthor] = 0;
 		}
 
 		const randomFollower = chance.natural({
 			min: 1,
 			max: maxUsers,
-			exclude: [randomLider],
+			exclude: [randomAuthor],
 		});
 
 		queryToDB = `INSERT INTO relationships(lider, follower) 
-		    	VALUES ('${randomLider}', '${randomFollower}')`;
+		    	VALUES ('${randomAuthor}', '${randomFollower}')`;
 		await client.query(queryToDB);
 	}
 
