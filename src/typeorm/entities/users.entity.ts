@@ -19,17 +19,15 @@ export class Users {
 	@Column({ type: 'varchar', length: 20, nullable: false })
 	gender: string;
 
-	@OneToMany(() => Relationships, (relationship) => relationship.lider)
-	// @JoinColumn({
-	// 	name: 'lider',
-	// 	referencedColumnName: 'lider',
-	// })
-	relationshipLider: Relationships[];
+	@OneToMany(
+		() => Relationships,
+		(relationshipLider) => relationshipLider.lider,
+	)
+	liders: Relationships[];
 
-	@OneToMany(() => Relationships, (relationship) => relationship.follower)
-	// @JoinColumn({
-	// 	name: 'follower',
-	// 	referencedColumnName: 'follower',
-	// })
-	relationshipFollower: Relationships[];
+	@OneToMany(
+		() => Relationships,
+		(relationshipFollower) => relationshipFollower.follower,
+	)
+	followers: Relationships[];
 }

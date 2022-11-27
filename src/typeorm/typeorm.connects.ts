@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import { nameSort } from '../users/dto/getFriends.dto';
-import { IUser } from '../users/interfaces/users.interfaces';
+import { IRelationship } from '../users/interfaces/relationship.interface';
+import { IUser } from '../users/interfaces/user.interface';
+import { ISubscription } from '../users/interfaces/user.subscription';
 import { typeOrmConfig } from './data-source';
 import { Relationships } from './entities/relationships.enity';
 import { Users } from './entities/users.entity';
@@ -27,15 +29,18 @@ export class TypeOrmConnects {
 		const resultFromDB = await this.dataSource
 			.getRepository(Users)
 			.createQueryBuilder('users')
-			.distinctOn(['users.user_id'])
-			//.innerJoinAndSelect('users.relationshipLider', 'rl')
-			//.orderBy('users.user_id')
+			.distinctOn(['users.id_user'])
+			.innerJoin(Relationships, 'r', 'users.id_user = r.lider')
+			.orderBy('id_user')
 			.getMany();
 		return resultFromDB;
 	}
 
-	// Get users with relationships
-	async getFriends(idUser: number, sortByInput: string) {
+	// Get friends(friends - have a mutual subscription)
+	async getFriends(
+		idUser: number,
+		sortByInput: string,
+	): Promise<IRelationship[]> {
 		let sortBy: 'ASC' | 'DESC';
 		if (sortByInput === 'desc') {
 			sortBy = 'DESC';
@@ -44,9 +49,33 @@ export class TypeOrmConnects {
 		}
 		const resultFromDB = await this.dataSource
 			.getRepository(Relationships)
-			.createQueryBuilder('relationships')
-			.orderBy('lider', sortBy)
+			.createQueryBuilder('rlt')
+			.where((qb) => {
+				const subQuery = qb
+					.subQuery()
+					.select('rltn.follower')
+					.from(Relationships, 'rltn')
+					.where('rltn.lider = :lider', { lider: `${idUser}` })
+					.getQuery();
+				return 'rlt.lider IN ' + subQuery;
+			})
+			.andWhere('rlt.follower = :follower', { follower: `${idUser}` })
+			.orderBy('rlt.follower', sortBy)
 			.getMany();
+		return resultFromDB;
+	}
+
+	// Getting the top 5 users who made the most subscriptions.
+	async topFive(): Promise<ISubscription[]> {
+		const resultFromDB = await this.dataSource
+			.getRepository(Relationships)
+			.createQueryBuilder('rtl')
+			.select('rtl.follower')
+			.addSelect('Count(rtl.follower) as count')
+			.groupBy('rtl.follower')
+			.orderBy('count', 'DESC')
+			.limit(5)
+			.getRawMany();
 		return resultFromDB;
 	}
 }

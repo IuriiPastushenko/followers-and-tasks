@@ -45,5 +45,23 @@ export class UsersRouter {
 				}
 			},
 		);
+		// Top 5 by subscriptions
+		this.router.get(
+			'/max-following',
+			async (req: Request, res: Response, next: NextFunction) => {
+				try {
+					const topFive = await typeOrmConnects.topFive();
+					res.status(201).json(topFive);
+				} catch (err) {
+					next(
+						new HttpException(
+							424,
+							'List of subscriptions not available',
+							err as string,
+						),
+					);
+				}
+			},
+		);
 	}
 }
