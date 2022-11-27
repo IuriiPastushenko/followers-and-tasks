@@ -1,14 +1,14 @@
 import { IsString, IsEnum } from 'class-validator';
 
 export enum nameSort {
-	desc,
-	asc,
+  desc,
+  asc,
 }
 
 export class GetFriendsDto {
-	@IsString()
-	public order_by: string;
+  @IsString()
+  public order_by: string;
 
-	@IsEnum(nameSort)
-	public order_type: string;
+  @IsEnum(nameSort)
+  public order_type: string;
 }

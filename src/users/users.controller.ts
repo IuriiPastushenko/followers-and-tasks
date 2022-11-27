@@ -5,83 +5,83 @@ import { GetFriendsDto, nameSort } from './dto/getFriends.dto';
 import { validationMiddleware } from '../midlleware/validate.middleware';
 
 export class UsersRouter {
-	public router = Router();
+  public router = Router();
 
-	constructor() {
-		this.usersrouts();
-	}
+  constructor() {
+    this.usersrouts();
+  }
 
-	usersrouts(): void {
-		// List of users
-		this.router.get(
-			'/users',
-			async (req: Request, res: Response, next: NextFunction) => {
-				try {
-					const resultUsersList = await typeOrmConnects.usersList();
-					res.status(201).json(resultUsersList);
-				} catch (err) {
-					next(
-						new HttpException(422, 'Users list not available', err as string),
-					);
-				}
-			},
-		);
+  usersrouts(): void {
+    // List of users
+    this.router.get(
+      '/users',
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const resultUsersList = await typeOrmConnects.usersList();
+          res.status(201).json(resultUsersList);
+        } catch (err) {
+          next(
+            new HttpException(422, 'Users list not available', err as string),
+          );
+        }
+      },
+    );
 
-		// List of users
-		this.router.get(
-			'/users/123/friends',
-			validationMiddleware(GetFriendsDto),
-			async (req: Request, res: Response, next: NextFunction) => {
-				try {
-					const resultFromQuery = req.query;
-					const idUser = +(resultFromQuery.order_by as string);
-					const sortBy = resultFromQuery.order_type as string;
-					const friends = await typeOrmConnects.getFriends(idUser, sortBy);
-					res.status(201).json(friends);
-				} catch (err) {
-					next(
-						new HttpException(422, 'Friends list not available', err as string),
-					);
-				}
-			},
-		);
+    // List of users
+    this.router.get(
+      '/users/123/friends',
+      validationMiddleware(GetFriendsDto),
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const resultFromQuery = req.query;
+          const idUser = +(resultFromQuery.order_by as string);
+          const sortBy = resultFromQuery.order_type as string;
+          const friends = await typeOrmConnects.getFriends(idUser, sortBy);
+          res.status(201).json(friends);
+        } catch (err) {
+          next(
+            new HttpException(422, 'Friends list not available', err as string),
+          );
+        }
+      },
+    );
 
-		// Top 5 by subscriptions
-		this.router.get(
-			'/max-following',
-			async (req: Request, res: Response, next: NextFunction) => {
-				try {
-					const topFive = await typeOrmConnects.topFive();
-					res.status(201).json(topFive);
-				} catch (err) {
-					next(
-						new HttpException(
-							422,
-							'List of subscriptions not available',
-							err as string,
-						),
-					);
-				}
-			},
-		);
+    // Top 5 by subscriptions
+    this.router.get(
+      '/max-following',
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const topFive = await typeOrmConnects.topFive();
+          res.status(201).json(topFive);
+        } catch (err) {
+          next(
+            new HttpException(
+              422,
+              'List of subscriptions not available',
+              err as string,
+            ),
+          );
+        }
+      },
+    );
 
-		// Users with subscriptions = 0
-		this.router.get(
-			'/not-following',
-			async (req: Request, res: Response, next: NextFunction) => {
-				try {
-					const zeroSubscriptions = await typeOrmConnects.getZero();
-					res.status(201).json(zeroSubscriptions);
-				} catch (err) {
-					next(
-						new HttpException(
-							422,
-							'List of users with subscriptions = 0 not available',
-							err as string,
-						),
-					);
-				}
-			},
-		);
-	}
+    // Users with subscriptions = 0
+    this.router.get(
+      '/not-following',
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const zeroSubscriptions = await typeOrmConnects.getZero();
+          res.status(201).json(zeroSubscriptions);
+        } catch (err) {
+          next(
+            new HttpException(
+              422,
+              'List of users with subscriptions = 0 not available',
+              err as string,
+            ),
+          );
+        }
+      },
+    );
+  }
 }

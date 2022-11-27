@@ -4,31 +4,31 @@ import { typeOrmConnects } from '../index';
 import { errorMiddleware } from './errors/ error.middleware';
 
 export class ServerOrganization {
-	private app: Express;
-	private port: number;
+  private app: Express;
+  private port: number;
 
-	constructor(usersrouter: UsersRouter) {
-		this.app = express();
-		this.port = 3000;
-		this.routingUser(usersrouter);
-		this.errorMiddleware();
-	}
+  constructor(usersrouter: UsersRouter) {
+    this.app = express();
+    this.port = 3000;
+    this.routingUser(usersrouter);
+    this.errorMiddleware();
+  }
 
-	// routerUsers
-	private routingUser(usersrouter: UsersRouter): void {
-		this.app.use('/', usersrouter.router);
-	}
+  // routerUsers
+  private routingUser(usersrouter: UsersRouter): void {
+    this.app.use('/', usersrouter.router);
+  }
 
-	// Error exeption
-	private errorMiddleware(): void {
-		this.app.use(errorMiddleware);
-	}
+  // Error exeption
+  private errorMiddleware(): void {
+    this.app.use(errorMiddleware);
+  }
 
-	// Listen server
-	async init(): Promise<void> {
-		this.app.listen(this.port, () => {
-			console.log(`Server is started, PORT ${this.port}`);
-		});
-		await typeOrmConnects.initialize();
-	}
+  // Listen server
+  async init(): Promise<void> {
+    this.app.listen(this.port, () => {
+      console.log(`Server is started, PORT ${this.port}`);
+    });
+    await typeOrmConnects.initialize();
+  }
 }
