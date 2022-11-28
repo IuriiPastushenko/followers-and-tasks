@@ -6,7 +6,7 @@ Settings:
   const maxUsers = 200 - maximum number of users;
   const maxRelationship = maxUsers * 10 - maximum number of subscriptions;
   const maxRelationshipPerOneUse = 150 - maximum number of subscriptions per user;
-Run on command for script: npm run create_tables
+Run on command for script: npm run create:tables
 
 2. Run on command app: npm run start
    Port: 3000;
