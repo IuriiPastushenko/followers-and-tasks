@@ -1,43 +1,31 @@
-What needed to be done:
-    Create a tiny server app based on Node.js.
-    The app should implement simple organization user structure management operations.
-    The following user roles should be supported:
-    a. Administrator (top-most user)
-    b. Boss (any user with at least 1 subordinate)
-    c. Regular user (user without subordinates)
-    Each user except the Administrator must have a boss (strictly one).
-    The following REST API endpoints should be exposed:
-    1. Register user
-    2. Authenticate as a user
-    3. Return list of users, taking into account the following:
-    - administrator should see everyone
-    - boss should see herself and all subordinates (recursively)
-    - regular user can see only herself
-    4. Change user's boss (only boss can do that and only for her subordinates)
+REST app based on Node.JS (Express, TypeScript, TypeORM, PostgreSQL) and which will contain: random born users and connections between them. Upon request, it will be necessary to provide the necessary information.
 
-Addition 1 (commit Second): implemented a method for displaying the weather at the workplace (at the specified coordinates). Weather data is received from the service https://openweathermap.org/current.
+Capabilities:
+1. Script for generating random data followers/src/seeds/seeding.users.ts
+Settings:
+  const maxUsers = 200 - maximum number of users;
+  const maxRelationship = maxUsers * 10 - maximum number of subscriptions;
+  const maxRelationshipPerOneUse = 150 - maximum number of subscriptions per user;
+Run on command for script: npm run create_tables
 
-Addition 1 (commit Third): added error handling.
+2. Run on command app: npm run start
+   Port: 3000;
 
-This task was completed, the application was created on the Express Node.JS framework in the TypeScript language. Database - built on PostgreSQL
+3. In the application are used the following middleware:
+- error handler
+followers/src/errors/ error.middleware.ts;
+ - inputdata validator
+ - followers/src/midlleware/validate.middleware.ts
 
-Main files:
-main.ts - application launch file;
-/src/app.ts -  server class;
-src/controllers/users.controller.ts - route handler on users(registration, login, list, changedepartment);
-src/controllers/services.controller.ts - route handler on service(weather/search);
-/src/midlleware/auth.middleware.ts - token authentication according to the standard JWT;
-/src/dbconnection/dbconnect.ts - query file and data processing from the database;
-src/services/weather/weather_api_sevices.ts - api call file for the weather service;
-/src/logger/logger_service.ts -  event logger, outputs informational messages to the console and writes the main events to the log file.
+4. Endpoint: localhost:3000/users
+  - getting a list of users who have subscriptions to other users.
 
-Database:
-Table department: id_department, department.
-Table jobtitle: id_jobtitle, jobtitle.
-Table employee: id_employee, firstname, lastname, email, phone, password, department, jobtitle.
-Table jobplaces: ID_place, place, lat float4 not null, lon.
+5. Endpoint: /users/123/friends?order_by=id_user&order_type=desc
+ - getting information about the user with friends and available sorting by the specified field. (for friends we will consider mutual subscription)
 
+6. Endpoint: localhost:3000/max-following
+ - getting the top 5 users who made the most subscriptions.
 
-
-
+7. Endpoint: localhost:3000/not-following
+ - receiving users who have made 0 subscriptions.
 

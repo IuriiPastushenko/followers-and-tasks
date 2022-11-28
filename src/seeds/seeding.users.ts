@@ -50,7 +50,7 @@ import { Client } from 'pg';
   queryToDB =
     'CREATE TABLE relationships\
 	  (id_relationship SERIAL, \
-		lider INTEGER NOT NULL, \
+		author INTEGER NOT NULL, \
 		follower INTEGER NOT NULL, \
 		FOREIGN KEY(author) REFERENCES users (id_user), \
 		FOREIGN KEY(follower) REFERENCES users (id_user));';
@@ -81,7 +81,7 @@ import { Client } from 'pg';
       exclude: [randomAuthor],
     });
 
-    queryToDB = `INSERT INTO relationships(lider, follower) 
+    queryToDB = `INSERT INTO relationships(author, follower) 
 		    	VALUES ('${randomAuthor}', '${randomFollower}')`;
     await client.query(queryToDB);
   }
